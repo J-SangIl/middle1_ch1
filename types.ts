@@ -5,15 +5,11 @@ export enum GameMode {
   PRIME_LAB = 'PRIME_LAB'
 }
 
-export enum PrimeLabMode {
-  FUSION = 'FUSION',
-  DECOMPOSITION = 'DECOMPOSITION'
-}
-
+// FactorNode interface for prime factorization tree experiments
 export interface FactorNode {
   id: string;
   value: number;
-  children: FactorNode[] | null;
+  children: [FactorNode, FactorNode] | null;
   isPrime: boolean;
   color?: string;
 }

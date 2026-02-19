@@ -46,7 +46,7 @@ const App: React.FC = () => {
                   <span className="text-3xl">🧪</span>
                 </div>
                 <h2 className="text-2xl font-bold text-blue-900 mb-2">1-1 Prime Lab</h2>
-                <p className="text-gray-500 mb-4">소수를 융합하여 수를 만들거나, 합성수를 소수의 곱으로 분해해보세요.</p>
+                <p className="text-gray-500 mb-4">소수를 융합하거나 합성수를 소인수분해하는 실험을 해보세요.</p>
                 <span className="inline-flex items-center text-blue-600 font-semibold group-hover:translate-x-2 transition-transform">
                   시작하기 <span className="ml-2">→</span>
                 </span>

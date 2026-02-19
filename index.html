@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>수학 놀이터: 소인수분해 마스터</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
@@ -17,26 +16,17 @@
             background-color: #f8fafc;
         }
     </style>
-    <!-- React 및 필수 라이브러리 importmap -->
-    <script type="importmap">
+<script type="importmap">
 {
   "imports": {
-    "react": "https://esm.sh/react@19.0.0",
-    "react-dom": "https://esm.sh/react-dom@19.0.0",
-    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
+    "react": "https://esm.sh/react@^19.2.4",
     "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
     "react/": "https://esm.sh/react@^19.2.4/"
   }
 }
 </script>
-    <!-- esm.sh/run: 브라우저에서 TSX 파일을 즉석 변환하여 실행해주는 도구입니다. -->
-    <script type="module" src="https://esm.sh/run"></script>
 </head>
 <body>
     <div id="root"></div>
-    <!-- 
-      esm.sh/run 라이브러리가 자동으로 프로젝트 루트의 index.tsx를 찾아 
-      자바스크립트로 변환 후 실행합니다. 
-    -->
 </body>
 </html>
