@@ -20,7 +20,7 @@ const App: React.FC = () => {
               <h1 className="text-4xl md:text-5xl font-bold text-indigo-900 mb-4">
                 중학 수학 1학년 <span className="text-blue-600">소인수분해</span>
               </h1>
-              <p className="text-lg text-gray-600">재미있는 게임과 실험으로 소수와 합성수를 배워보아요!</p>
+              <p className="text-lg text-gray-600">재미있는 게임과 실험으로 소수의 원리를 배워보아요!</p>
             </header>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl">
@@ -32,7 +32,7 @@ const App: React.FC = () => {
                   <span className="text-3xl">🧩</span>
                 </div>
                 <h2 className="text-2xl font-bold text-indigo-900 mb-2">1-0 Hidden Rectangle</h2>
-                <p className="text-gray-500 mb-4">약수와 배수의 관계를 이용해 숨겨진 직사각형 구역을 찾아보세요.</p>
+                <p className="text-gray-500 mb-4">직사각형 모양으로 숨겨진 당첨 칸들을 찾아보세요.</p>
                 <span className="inline-flex items-center text-indigo-600 font-semibold group-hover:translate-x-2 transition-transform">
                   시작하기 <span className="ml-2">→</span>
                 </span>
@@ -45,8 +45,8 @@ const App: React.FC = () => {
                 <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                   <span className="text-3xl">🧪</span>
                 </div>
-                <h2 className="text-2xl font-bold text-blue-900 mb-2">1-1 Prime Lab</h2>
-                <p className="text-gray-500 mb-4">소수를 융합하거나 합성수를 소인수분해하는 실험을 해보세요.</p>
+                <h2 className="text-2xl font-bold text-blue-900 mb-2">1-1 소수 융합 실험실</h2>
+                <p className="text-gray-500 mb-4">여러 개의 소수를 선택하고 합쳐서 어떤 수가 되는지 확인해보세요.</p>
                 <span className="inline-flex items-center text-blue-600 font-semibold group-hover:translate-x-2 transition-transform">
                   시작하기 <span className="ml-2">→</span>
                 </span>

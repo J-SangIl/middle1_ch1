@@ -5,11 +5,11 @@ export enum GameMode {
   PRIME_LAB = 'PRIME_LAB'
 }
 
-// FactorNode interface for prime factorization tree experiments
+// Interface for prime factorization tree nodes
 export interface FactorNode {
   id: string;
   value: number;
-  children: [FactorNode, FactorNode] | null;
+  children: FactorNode[] | null;
   isPrime: boolean;
   color?: string;
 }
