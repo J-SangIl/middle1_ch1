@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { FactorNode, PRIME_COLORS } from '../types';
 
@@ -121,10 +122,9 @@ const DecompositionMode: React.FC<DecompositionModeProps> = ({ onExit, onHome })
     return check(rootNode);
   }, [rootNode]);
 
-  // 소인수분해 식 생성 (거듭제곱 없이 모든 소인수 나열)
+  // 소인수분해 식 생성 (모든 소인수 나열)
   const factorizationResultElements = useMemo(() => {
     if (allPrimes.length === 0) return null;
-    // 소인수를 오름차순으로 정렬
     const sortedPrimes = [...allPrimes].sort((a, b) => a - b);
     
     return sortedPrimes.map((p, idx) => (
@@ -137,7 +137,7 @@ const DecompositionMode: React.FC<DecompositionModeProps> = ({ onExit, onHome })
     ));
   }, [allPrimes]);
 
-  // 트리 노드 렌더링 (재귀)
+  // 트리 노드 렌더링
   const renderTreeNode = (node: FactorNode) => {
     const hasChildren = node.children !== null;
     const isSelected = selectedNodeId === node.id;
@@ -153,10 +153,10 @@ const DecompositionMode: React.FC<DecompositionModeProps> = ({ onExit, onHome })
               }
             }}
             className={`
-              min-w-[50px] h-10 px-2 rounded-full flex items-center justify-center font-bold transition-all relative z-30
-              ${node.isPrime ? (node.color || 'bg-green-100 border-green-400 shadow-sm') : 'bg-transparent text-slate-800 border-2 border-transparent'}
-              ${isSelected ? 'ring-4 ring-blue-300 scale-110 shadow-lg' : ''}
-              ${!node.isPrime && !hasChildren ? 'hover:bg-slate-50 cursor-pointer' : 'cursor-default'}
+              min-w-[50px] h-10 px-3 rounded-full flex items-center justify-center font-bold transition-all relative z-30
+              ${node.isPrime ? (node.color || 'bg-green-100 border-green-400 shadow-sm') : 'bg-white/80 backdrop-blur-sm text-slate-800 border-2 border-slate-200'}
+              ${isSelected ? 'ring-4 ring-blue-300 scale-110 shadow-xl z-40' : 'shadow-sm'}
+              ${!node.isPrime && !hasChildren ? 'hover:bg-blue-50 hover:border-blue-200 cursor-pointer' : 'cursor-default'}
               text-lg
             `}
           >
@@ -164,45 +164,45 @@ const DecompositionMode: React.FC<DecompositionModeProps> = ({ onExit, onHome })
           </button>
 
           {isSelected && (
-            <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-50 min-w-[200px] bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.2)] p-4 border border-blue-100 animate-in fade-in slide-in-from-top-2 duration-200">
-              <p className="text-[10px] font-black text-blue-600 mb-2 text-center uppercase tracking-tighter">
-                {node.value}를 어떤 수로 나눌까요?
+            <div className="absolute top-full mt-3 left-1/2 -translate-x-1/2 z-50 min-w-[220px] bg-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] p-5 border border-blue-100 animate-in fade-in slide-in-from-top-2 duration-300">
+              <p className="text-[11px] font-black text-blue-600 mb-3 text-center uppercase tracking-tight">
+                나눌 수 있는 숫자를 선택하세요
               </p>
-              <div className="grid grid-cols-4 gap-1">
+              <div className="grid grid-cols-4 gap-1.5">
                 {getFactors(node.value).map(f => (
                   <button
                     key={f}
                     onClick={(e) => { e.stopPropagation(); splitNode(node.id, f); }}
-                    className="py-1 bg-blue-50 text-blue-700 text-xs font-bold rounded-lg hover:bg-blue-600 hover:text-white transition-all border border-blue-100"
+                    className="py-1.5 bg-slate-50 text-slate-700 text-xs font-bold rounded-xl hover:bg-blue-600 hover:text-white transition-all border border-slate-100 hover:border-blue-500 shadow-sm"
                   >
                     {f}
                   </button>
                 ))}
               </div>
-              <button onClick={() => setSelectedNodeId(null)} className="w-full mt-2 text-[8px] text-gray-400 font-bold hover:text-red-400 uppercase">닫기</button>
+              <button onClick={() => setSelectedNodeId(null)} className="w-full mt-3 text-[9px] text-slate-300 font-black hover:text-red-400 uppercase tracking-widest transition-colors">닫기</button>
             </div>
           )}
         </div>
 
         {hasChildren && (
-          <div className="flex justify-center mt-12 relative w-full animate-in fade-in duration-700 delay-300">
-            <div className="flex-1 flex justify-center px-4 md:px-8 min-w-[80px]">
+          <div className="flex justify-center mt-14 relative w-full animate-in fade-in duration-700 delay-300">
+            <div className="flex-1 flex justify-center px-6 md:px-12 min-w-[100px]">
               {renderTreeNode(node.children![0])}
             </div>
-            <div className="flex-1 flex justify-center px-4 md:px-8 min-w-[80px]">
+            <div className="flex-1 flex justify-center px-6 md:px-12 min-w-[100px]">
               {renderTreeNode(node.children![1])}
             </div>
 
-            <div className="absolute top-[-48px] left-0 right-0 h-12 pointer-events-none overflow-visible">
+            <div className="absolute top-[-56px] left-0 right-0 h-14 pointer-events-none overflow-visible">
               <svg className="w-full h-full overflow-visible" style={{ position: 'absolute' }}>
                 <line 
                   x1="50%" y1="0" x2="25%" y2="100%" 
-                  stroke="#cbd5e1" strokeWidth="2.5" strokeLinecap="round" 
+                  stroke="#e2e8f0" strokeWidth="3" strokeLinecap="round" 
                   className="animate-line-draw-smooth"
                 />
                 <line 
                   x1="50%" y1="0" x2="75%" y2="100%" 
-                  stroke="#cbd5e1" strokeWidth="2.5" strokeLinecap="round" 
+                  stroke="#e2e8f0" strokeWidth="3" strokeLinecap="round" 
                   className="animate-line-draw-smooth"
                 />
               </svg>
@@ -218,114 +218,111 @@ const DecompositionMode: React.FC<DecompositionModeProps> = ({ onExit, onHome })
       <style>
         {`
           @keyframes lineDrawSmooth {
-            0% { stroke-dasharray: 0, 200; stroke-dashoffset: 0; }
-            100% { stroke-dasharray: 200, 200; stroke-dashoffset: 0; }
+            0% { stroke-dasharray: 0, 250; stroke-dashoffset: 0; }
+            100% { stroke-dasharray: 250, 250; stroke-dashoffset: 0; }
           }
           @keyframes bounceShort {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-3px); }
+            50% { transform: translateY(-4px); }
           }
           @keyframes celebratory-zoom {
-            0% { transform: scale(0.9); opacity: 0; }
-            70% { transform: scale(1.05); opacity: 1; }
+            0% { transform: scale(0.95); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
           }
           .animate-line-draw-smooth {
-            stroke-dasharray: 0, 200;
+            stroke-dasharray: 0, 250;
             animation: lineDrawSmooth 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
           }
           .animate-bounce-short {
             animation: bounceShort 2s ease-in-out infinite;
           }
           .animate-celebratory {
-            animation: celebratory-zoom 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            animation: celebratory-zoom 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
           }
-          .delay-300 {
-            animation-delay: 0.3s;
-          }
-          .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-          }
-          .scrollbar-hide {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-          }
+          .scrollbar-hide::-webkit-scrollbar { display: none; }
+          .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
         `}
       </style>
       
-      {/* 상단 네비게이션 */}
       <div className="w-full max-w-6xl flex justify-between items-center mb-6 shrink-0 relative z-10">
         <div className="flex gap-2">
-          <button onClick={onHome} className="text-slate-500 text-sm font-bold hover:bg-white px-2 py-1 rounded-lg transition-colors shadow-sm bg-white/50 backdrop-blur-sm">🏠 메인</button>
-          <button onClick={onExit} className="text-slate-500 text-sm font-bold hover:bg-white px-2 py-1 rounded-lg transition-colors shadow-sm bg-white/50 backdrop-blur-sm">← 모드 선택</button>
+          <button onClick={onHome} className="text-slate-500 text-sm font-bold hover:bg-white px-3 py-1.5 rounded-xl transition-all shadow-sm bg-white/50 backdrop-blur-sm border border-slate-200/50">🏠 메인</button>
+          <button onClick={onExit} className="text-slate-500 text-sm font-bold hover:bg-white px-3 py-1.5 rounded-xl transition-all shadow-sm bg-white/50 backdrop-blur-sm border border-slate-200/50">← 실험 선택</button>
         </div>
-        <h2 className="text-xl font-black text-slate-800">소인수분해 실험실</h2>
+        <h2 className="text-xl font-black text-slate-800 tracking-tight">소인수분해 실험실</h2>
         <div className="w-24"></div>
       </div>
 
       {!rootNode ? (
-        <div className="flex-1 flex flex-col items-center justify-center w-full max-w-md">
-          <div className="bg-white p-8 rounded-[32px] shadow-2xl border border-slate-100 w-full animate-in zoom-in duration-300">
-            <h3 className="text-2xl font-black text-slate-800 mb-6 text-center">실험할 자연수 입력</h3>
-            <input
-              type="number"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && startDecomposition()}
-              className="w-full p-4 border-2 border-slate-100 rounded-2xl focus:border-blue-400 outline-none text-2xl text-center mb-6 font-bold shadow-inner"
-              placeholder="예: 48"
-            />
-            <button
-              onClick={startDecomposition}
-              className="w-full bg-blue-600 text-white font-black py-4 rounded-2xl hover:bg-blue-700 transition-all shadow-lg active:scale-95"
-            >
-              분해 시작하기
-            </button>
+        <div className="flex-1 flex flex-col items-center justify-center w-full max-w-lg p-4">
+          <div className="bg-white p-10 rounded-[40px] shadow-2xl border border-slate-100 w-full animate-in zoom-in duration-500 text-center relative overflow-hidden">
+            <div className="absolute -top-10 -right-10 w-40 h-40 bg-blue-50 rounded-full opacity-50 blur-3xl"></div>
+            <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-indigo-50 rounded-full opacity-50 blur-3xl"></div>
+            
+            <div className="w-20 h-20 bg-blue-50 rounded-3xl flex items-center justify-center text-4xl mx-auto mb-6 shadow-inner relative z-10">🧪</div>
+            <h3 className="text-2xl font-black text-slate-800 mb-2 relative z-10">어떤 수를 분해해볼까요?</h3>
+            <p className="text-slate-400 text-sm font-medium mb-8 relative z-10">2 이상의 자연수를 입력하면 실험이 시작됩니다.</p>
+            
+            <div className="relative z-10">
+              <input
+                type="number"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && startDecomposition()}
+                className="w-full p-5 bg-slate-50 border-2 border-slate-100 rounded-[24px] focus:border-blue-400 focus:bg-white outline-none text-3xl text-center mb-6 font-black shadow-inner transition-all placeholder:text-slate-200"
+                placeholder="숫자 입력"
+                autoFocus
+              />
+              <button
+                onClick={startDecomposition}
+                className="w-full bg-blue-600 text-white font-black py-5 rounded-[24px] hover:bg-blue-700 transition-all shadow-xl shadow-blue-200 active:scale-95 text-lg"
+              >
+                실험 시작하기
+              </button>
+            </div>
           </div>
         </div>
       ) : (
         <div className="flex-1 w-full max-w-6xl bg-white rounded-[40px] shadow-2xl border border-slate-100 flex flex-col overflow-hidden animate-in fade-in duration-500 relative">
           
-          {/* 소인수분해 완료 강조창 */}
           {isComplete ? (
-            <div className="p-8 bg-gradient-to-b from-green-50 to-white border-b border-green-100 text-center relative overflow-hidden animate-celebratory">
-              {/* 장식용 아이콘 */}
-              <div className="absolute top-4 left-8 text-4xl opacity-20 rotate-12">🧪</div>
-              <div className="absolute bottom-4 right-8 text-4xl opacity-20 -rotate-12">✨</div>
+            <div className="p-10 bg-gradient-to-b from-blue-50/50 to-white border-b border-blue-50 text-center relative overflow-hidden animate-celebratory">
+              <div className="absolute top-4 left-8 text-4xl opacity-10 rotate-12">🧬</div>
+              <div className="absolute bottom-4 right-8 text-4xl opacity-10 -rotate-12">✨</div>
               
-              <div className="inline-block mb-3 px-4 py-1 bg-green-500 text-white text-[11px] font-black rounded-full shadow-lg shadow-green-100 tracking-[0.2em] uppercase animate-bounce-short">
-                Mission Complete!
+              <div className="inline-block mb-4 px-5 py-1.5 bg-blue-600 text-white text-[10px] font-black rounded-full shadow-lg shadow-blue-100 tracking-[0.2em] uppercase animate-bounce-short">
+                Decomposition Complete
               </div>
               
-              <h4 className="text-2xl font-black text-green-800 mb-6">소인수분해 성공!</h4>
+              <h4 className="text-2xl font-black text-slate-800 mb-8">분해 결과 확인</h4>
               
-              <div className="flex items-center justify-center gap-4 mb-8">
-                <div className="flex flex-col items-center">
-                   <span className="text-sm font-bold text-slate-400 mb-1">Original</span>
+              <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-10">
+                <div className="flex flex-col items-center bg-slate-50 px-8 py-4 rounded-[24px] border border-slate-100">
+                   <span className="text-[10px] font-black text-slate-400 mb-1 uppercase tracking-widest">Original</span>
                    <span className="text-3xl font-black text-slate-800">{rootNode.value}</span>
                 </div>
-                <div className="text-4xl text-slate-200 font-light mx-4">=</div>
-                <div className="flex items-center bg-white px-10 py-5 rounded-[30px] shadow-xl shadow-green-900/5 border-2 border-green-400/30 overflow-x-auto max-w-full">
+                <div className="text-4xl text-slate-200 font-light hidden md:block">=</div>
+                <div className="flex items-center bg-white px-10 py-6 rounded-[32px] shadow-2xl shadow-blue-900/5 border-2 border-blue-100 overflow-x-auto max-w-full scrollbar-hide">
                   {factorizationResultElements}
                 </div>
               </div>
               
               <button 
                 onClick={() => setRootNode(null)}
-                className="px-10 py-3 bg-green-600 text-white font-black rounded-2xl hover:bg-green-700 transition-all shadow-lg hover:scale-105 active:scale-95 text-lg"
+                className="px-12 py-4 bg-slate-800 text-white font-black rounded-[20px] hover:bg-slate-900 transition-all shadow-xl hover:scale-105 active:scale-95 text-lg"
               >
-                새로운 숫자 실험하기
+                새로운 실험 하기
               </button>
             </div>
           ) : (
-            <div className="p-6 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
+            <div className="p-6 border-b border-slate-50 flex justify-between items-center bg-slate-50/30 backdrop-blur-sm">
               <div className="flex flex-col">
                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">실험 대상</span>
                 <span className="text-2xl font-black text-slate-800">{rootNode.value}</span>
               </div>
               
               <div className="flex items-center gap-4">
-                <span className="text-xs font-bold text-slate-400 italic">합성수를 클릭해 나누어 보세요!</span>
+                <span className="text-xs font-bold text-blue-500 bg-blue-50 px-3 py-1.5 rounded-full animate-pulse">합성수를 클릭해 분해하세요!</span>
                 <button 
                   onClick={() => setRootNode(null)}
                   className="px-4 py-2 text-slate-400 hover:text-slate-600 font-bold transition-colors text-sm bg-white rounded-xl shadow-sm border border-slate-100"
@@ -336,18 +333,17 @@ const DecompositionMode: React.FC<DecompositionModeProps> = ({ onExit, onHome })
             </div>
           )}
           
-          {/* 트리 본체 */}
-          <div className="flex-1 relative overflow-auto p-12 flex justify-center items-start min-h-[500px] scrollbar-hide">
-            <div className={`min-w-max transition-all duration-700 ${isComplete ? 'scale-90 opacity-60 grayscale-[0.3]' : ''}`}>
+          <div className="flex-1 relative overflow-auto p-16 flex justify-center items-start min-h-[500px] scrollbar-hide">
+            <div className={`min-w-max transition-all duration-700 ease-in-out ${isComplete ? 'scale-90 opacity-40 blur-[2px]' : ''}`}>
               {renderTreeNode(rootNode)}
             </div>
           </div>
 
-          {/* 하단 안내 문구 */}
           {!isComplete && (
-            <div className="p-4 bg-slate-50 border-t border-slate-100 text-center">
-              <p className="text-[11px] text-slate-400 font-bold">
-                숫자를 클릭하면 나눌 수 있는 인수가 나타납니다. 모든 끝 노드가 <span className="text-blue-500">소수</span>가 되면 실험이 완료됩니다.
+            <div className="p-5 bg-slate-50/50 border-t border-slate-50 text-center">
+              <p className="text-[11px] text-slate-400 font-bold flex items-center justify-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+                모든 끝 마디가 소수가 될 때까지 실험을 계속하세요!
               </p>
             </div>
           )}
