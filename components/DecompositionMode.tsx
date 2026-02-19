@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { FactorNode, PRIME_COLORS } from '../types';
 
@@ -7,6 +6,7 @@ interface DecompositionModeProps {
   onHome: () => void;
 }
 
+// 소수 판별 함수
 const isPrime = (num: number): boolean => {
   if (num < 2) return false;
   for (let i = 2; i <= Math.sqrt(num); i++) {
@@ -15,6 +15,7 @@ const isPrime = (num: number): boolean => {
   return true;
 };
 
+// 약수 목록 가져오기 (자기 자신과 1 제외)
 const getFactors = (num: number): number[] => {
   const factors = [];
   for (let i = 2; i < num; i++) {
@@ -24,10 +25,11 @@ const getFactors = (num: number): number[] => {
 };
 
 const DecompositionMode: React.FC<DecompositionModeProps> = ({ onExit, onHome }) => {
-  const [inputValue, setInputValue] = useState<string>('48');
+  const [inputValue, setInputValue] = useState<string>('');
   const [rootNode, setRootNode] = useState<FactorNode | null>(null);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
 
+  // 실험 시작
   const startDecomposition = () => {
     const val = parseInt(inputValue);
     if (isNaN(val) || val < 2) {
@@ -44,6 +46,7 @@ const DecompositionMode: React.FC<DecompositionModeProps> = ({ onExit, onHome })
     setSelectedNodeId(null);
   };
 
+  // 트리 업데이트 (특정 노드를 두 인수로 분해)
   const updateTree = (node: FactorNode, targetId: string, f1: number, f2: number): FactorNode => {
     if (node.id === targetId) {
       return {
@@ -54,14 +57,14 @@ const DecompositionMode: React.FC<DecompositionModeProps> = ({ onExit, onHome })
             value: f1, 
             children: null, 
             isPrime: isPrime(f1),
-            color: isPrime(f1) ? (PRIME_COLORS[f1] || 'bg-green-100 border-green-300') : undefined
+            color: isPrime(f1) ? (PRIME_COLORS[f1] || 'bg-green-100 border-green-300 text-green-800') : undefined
           },
           { 
             id: `${node.id}-R`, 
             value: f2, 
             children: null, 
             isPrime: isPrime(f2),
-            color: isPrime(f2) ? (PRIME_COLORS[f2] || 'bg-green-100 border-green-300') : undefined
+            color: isPrime(f2) ? (PRIME_COLORS[f2] || 'bg-green-100 border-green-300 text-green-800') : undefined
           }
         ]
       };
@@ -78,6 +81,7 @@ const DecompositionMode: React.FC<DecompositionModeProps> = ({ onExit, onHome })
     return node;
   };
 
+  // 노드 분해 실행
   const splitNode = (id: string, factor: number) => {
     if (!rootNode) return;
     const findNode = (node: FactorNode): FactorNode | null => {
@@ -95,6 +99,7 @@ const DecompositionMode: React.FC<DecompositionModeProps> = ({ onExit, onHome })
     }
   };
 
+  // 소인수 결과 수집
   const allPrimes = useMemo(() => {
     if (!rootNode) return [];
     const collect = (node: FactorNode): number[] => {
@@ -106,6 +111,7 @@ const DecompositionMode: React.FC<DecompositionModeProps> = ({ onExit, onHome })
     return collect(rootNode);
   }, [rootNode]);
 
+  // 모든 분해 완료 여부 확인
   const isComplete = useMemo(() => {
     if (!rootNode) return false;
     const check = (node: FactorNode): boolean => {
@@ -115,18 +121,30 @@ const DecompositionMode: React.FC<DecompositionModeProps> = ({ onExit, onHome })
     return check(rootNode);
   }, [rootNode]);
 
-  const factorizationResultString = useMemo(() => {
-    const sorted = [...allPrimes].sort((a, b) => a - b);
-    return sorted.join(' × ');
+  // 소인수분해 식 생성 (거듭제곱 없이 모든 소인수 나열)
+  const factorizationResultElements = useMemo(() => {
+    if (allPrimes.length === 0) return null;
+    // 소인수를 오름차순으로 정렬
+    const sortedPrimes = [...allPrimes].sort((a, b) => a - b);
+    
+    return sortedPrimes.map((p, idx) => (
+      <React.Fragment key={`${p}-${idx}`}>
+        {idx > 0 && <span className="mx-2 text-slate-300 font-light">×</span>}
+        <span className="inline-flex items-baseline">
+          <span className="text-3xl md:text-4xl font-black text-slate-800">{p}</span>
+        </span>
+      </React.Fragment>
+    ));
   }, [allPrimes]);
 
+  // 트리 노드 렌더링 (재귀)
   const renderTreeNode = (node: FactorNode) => {
     const hasChildren = node.children !== null;
     const isSelected = selectedNodeId === node.id;
 
     return (
-      <div className={`flex flex-col items-center relative`} key={node.id}>
-        <div className="relative flex flex-col items-center min-w-[80px]">
+      <div className="flex flex-col items-center relative" key={node.id}>
+        <div className="relative flex flex-col items-center min-w-[60px]">
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -135,8 +153,8 @@ const DecompositionMode: React.FC<DecompositionModeProps> = ({ onExit, onHome })
               }
             }}
             className={`
-              min-w-[56px] h-12 px-3 rounded-full flex items-center justify-center font-bold transition-all relative z-30
-              ${node.isPrime ? (node.color || 'bg-green-100 border-green-400') : 'bg-transparent text-slate-800 border-2 border-transparent'}
+              min-w-[50px] h-10 px-2 rounded-full flex items-center justify-center font-bold transition-all relative z-30
+              ${node.isPrime ? (node.color || 'bg-green-100 border-green-400 shadow-sm') : 'bg-transparent text-slate-800 border-2 border-transparent'}
               ${isSelected ? 'ring-4 ring-blue-300 scale-110 shadow-lg' : ''}
               ${!node.isPrime && !hasChildren ? 'hover:bg-slate-50 cursor-pointer' : 'cursor-default'}
               text-lg
@@ -146,59 +164,46 @@ const DecompositionMode: React.FC<DecompositionModeProps> = ({ onExit, onHome })
           </button>
 
           {isSelected && (
-            <div className="absolute top-full mt-3 left-1/2 -translate-x-1/2 z-50 min-w-[240px] bg-white rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.25)] p-5 border-2 border-blue-50 animate-in fade-in slide-in-from-top-4 duration-300">
-              <p className="text-xs font-black text-blue-600 mb-3 text-center">
+            <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-50 min-w-[200px] bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.2)] p-4 border border-blue-100 animate-in fade-in slide-in-from-top-2 duration-200">
+              <p className="text-[10px] font-black text-blue-600 mb-2 text-center uppercase tracking-tighter">
                 {node.value}를 어떤 수로 나눌까요?
               </p>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-4 gap-1">
                 {getFactors(node.value).map(f => (
                   <button
                     key={f}
                     onClick={(e) => { e.stopPropagation(); splitNode(node.id, f); }}
-                    className="py-1.5 bg-blue-50 text-blue-700 font-bold rounded-xl hover:bg-blue-600 hover:text-white transition-all border border-blue-100"
+                    className="py-1 bg-blue-50 text-blue-700 text-xs font-bold rounded-lg hover:bg-blue-600 hover:text-white transition-all border border-blue-100"
                   >
                     {f}
                   </button>
                 ))}
               </div>
-              <button onClick={() => setSelectedNodeId(null)} className="w-full mt-3 text-[9px] text-gray-400 font-black hover:text-red-400 uppercase">닫기</button>
+              <button onClick={() => setSelectedNodeId(null)} className="w-full mt-2 text-[8px] text-gray-400 font-bold hover:text-red-400 uppercase">닫기</button>
             </div>
           )}
         </div>
 
         {hasChildren && (
-          <div className="flex justify-center mt-12 relative w-full animate-in fade-in duration-700">
-            <div className="flex-1 flex justify-center px-4 md:px-8 min-w-[100px]">
+          <div className="flex justify-center mt-12 relative w-full animate-in fade-in duration-700 delay-300">
+            <div className="flex-1 flex justify-center px-4 md:px-8 min-w-[80px]">
               {renderTreeNode(node.children![0])}
             </div>
-            <div className="flex-1 flex justify-center px-4 md:px-8 min-w-[100px]">
+            <div className="flex-1 flex justify-center px-4 md:px-8 min-w-[80px]">
               {renderTreeNode(node.children![1])}
             </div>
 
             <div className="absolute top-[-48px] left-0 right-0 h-12 pointer-events-none overflow-visible">
-              <svg className="w-full h-full overflow-visible">
-                <style>
-                  {`
-                    @keyframes growLineDown {
-                      from { stroke-dashoffset: 500; }
-                      to { stroke-dashoffset: 0; }
-                    }
-                    .animate-line-down {
-                      stroke-dasharray: 500;
-                      stroke-dashoffset: 500;
-                      animation: growLineDown 0.8s ease-out forwards;
-                    }
-                  `}
-                </style>
+              <svg className="w-full h-full overflow-visible" style={{ position: 'absolute' }}>
                 <line 
                   x1="50%" y1="0" x2="25%" y2="100%" 
-                  stroke="#cbd5e1" strokeWidth="3" strokeLinecap="round" 
-                  className="animate-line-down"
+                  stroke="#cbd5e1" strokeWidth="2.5" strokeLinecap="round" 
+                  className="animate-line-draw-smooth"
                 />
                 <line 
                   x1="50%" y1="0" x2="75%" y2="100%" 
-                  stroke="#cbd5e1" strokeWidth="3" strokeLinecap="round" 
-                  className="animate-line-down"
+                  stroke="#cbd5e1" strokeWidth="2.5" strokeLinecap="round" 
+                  className="animate-line-draw-smooth"
                 />
               </svg>
             </div>
@@ -209,66 +214,143 @@ const DecompositionMode: React.FC<DecompositionModeProps> = ({ onExit, onHome })
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6 flex flex-col items-center">
-      <div className="w-full max-w-6xl flex justify-between items-center mb-8 shrink-0">
-        <div className="flex gap-4">
-          <button onClick={onHome} className="text-slate-500 font-bold hover:bg-white px-3 py-1 rounded-lg transition-colors shadow-sm">🏠 메인</button>
-          <button onClick={onExit} className="text-slate-500 font-bold hover:bg-white px-3 py-1 rounded-lg transition-colors shadow-sm">← 모드 선택</button>
+    <div className="min-h-screen bg-slate-50 p-4 flex flex-col items-center overflow-x-hidden">
+      <style>
+        {`
+          @keyframes lineDrawSmooth {
+            0% { stroke-dasharray: 0, 200; stroke-dashoffset: 0; }
+            100% { stroke-dasharray: 200, 200; stroke-dashoffset: 0; }
+          }
+          @keyframes bounceShort {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+          }
+          @keyframes celebratory-zoom {
+            0% { transform: scale(0.9); opacity: 0; }
+            70% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+          }
+          .animate-line-draw-smooth {
+            stroke-dasharray: 0, 200;
+            animation: lineDrawSmooth 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+          }
+          .animate-bounce-short {
+            animation: bounceShort 2s ease-in-out infinite;
+          }
+          .animate-celebratory {
+            animation: celebratory-zoom 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+          }
+          .delay-300 {
+            animation-delay: 0.3s;
+          }
+          .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+          }
+          .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+          }
+        `}
+      </style>
+      
+      {/* 상단 네비게이션 */}
+      <div className="w-full max-w-6xl flex justify-between items-center mb-6 shrink-0 relative z-10">
+        <div className="flex gap-2">
+          <button onClick={onHome} className="text-slate-500 text-sm font-bold hover:bg-white px-2 py-1 rounded-lg transition-colors shadow-sm bg-white/50 backdrop-blur-sm">🏠 메인</button>
+          <button onClick={onExit} className="text-slate-500 text-sm font-bold hover:bg-white px-2 py-1 rounded-lg transition-colors shadow-sm bg-white/50 backdrop-blur-sm">← 모드 선택</button>
         </div>
-        <h2 className="text-2xl font-black text-slate-800">소인수분해 실험실</h2>
-        <div className="w-32"></div>
+        <h2 className="text-xl font-black text-slate-800">소인수분해 실험실</h2>
+        <div className="w-24"></div>
       </div>
 
       {!rootNode ? (
-        <div className="bg-white p-10 rounded-[40px] shadow-2xl w-full max-w-md text-center border border-slate-100 animate-in zoom-in duration-300">
-          <div className="text-5xl mb-6">🔍</div>
-          <h3 className="text-2xl font-black text-slate-800 mb-2">분해할 숫자 입력</h3>
-          <p className="text-slate-400 mb-8 font-medium italic">합성수를 소수의 곱으로 분해해보세요!</p>
-          <input
-            type="number"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            className="w-full p-5 border-2 border-slate-100 rounded-3xl focus:border-green-400 outline-none text-3xl font-black text-center mb-8 shadow-inner"
-          />
-          <button
-            onClick={startDecomposition}
-            className="w-full bg-green-500 text-white font-black py-5 rounded-3xl hover:bg-green-600 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 active:translate-y-0"
-          >
-            실험 시작
-          </button>
+        <div className="flex-1 flex flex-col items-center justify-center w-full max-w-md">
+          <div className="bg-white p-8 rounded-[32px] shadow-2xl border border-slate-100 w-full animate-in zoom-in duration-300">
+            <h3 className="text-2xl font-black text-slate-800 mb-6 text-center">실험할 자연수 입력</h3>
+            <input
+              type="number"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && startDecomposition()}
+              className="w-full p-4 border-2 border-slate-100 rounded-2xl focus:border-blue-400 outline-none text-2xl text-center mb-6 font-bold shadow-inner"
+              placeholder="예: 48"
+            />
+            <button
+              onClick={startDecomposition}
+              className="w-full bg-blue-600 text-white font-black py-4 rounded-2xl hover:bg-blue-700 transition-all shadow-lg active:scale-95"
+            >
+              분해 시작하기
+            </button>
+          </div>
         </div>
       ) : (
-        <div className="w-full max-w-full flex flex-col items-center" onClick={() => setSelectedNodeId(null)}>
-          <div className="w-full bg-white rounded-[60px] shadow-2xl border border-slate-100 p-8 md:p-16 min-h-[700px] flex flex-col items-center relative overflow-x-auto transition-all duration-700">
-            
-            {/* Completion result moved to TOP */}
-            {isComplete && (
-              <div className="mb-12 w-full max-w-2xl bg-green-50 rounded-[30px] p-6 border-4 border-green-200 text-center animate-in slide-in-from-top-12 fade-in duration-1000 shadow-xl relative z-40">
-                <div className="flex items-center justify-center gap-3 mb-2">
-                  <span className="text-2xl animate-bounce">🎯</span>
-                  <h4 className="text-xl font-black text-green-800 uppercase tracking-widest">소인수분해 완료!</h4>
+        <div className="flex-1 w-full max-w-6xl bg-white rounded-[40px] shadow-2xl border border-slate-100 flex flex-col overflow-hidden animate-in fade-in duration-500 relative">
+          
+          {/* 소인수분해 완료 강조창 */}
+          {isComplete ? (
+            <div className="p-8 bg-gradient-to-b from-green-50 to-white border-b border-green-100 text-center relative overflow-hidden animate-celebratory">
+              {/* 장식용 아이콘 */}
+              <div className="absolute top-4 left-8 text-4xl opacity-20 rotate-12">🧪</div>
+              <div className="absolute bottom-4 right-8 text-4xl opacity-20 -rotate-12">✨</div>
+              
+              <div className="inline-block mb-3 px-4 py-1 bg-green-500 text-white text-[11px] font-black rounded-full shadow-lg shadow-green-100 tracking-[0.2em] uppercase animate-bounce-short">
+                Mission Complete!
+              </div>
+              
+              <h4 className="text-2xl font-black text-green-800 mb-6">소인수분해 성공!</h4>
+              
+              <div className="flex items-center justify-center gap-4 mb-8">
+                <div className="flex flex-col items-center">
+                   <span className="text-sm font-bold text-slate-400 mb-1">Original</span>
+                   <span className="text-3xl font-black text-slate-800">{rootNode.value}</span>
                 </div>
-                <div className="h-[2px] w-1/4 bg-green-200 mx-auto my-3 rounded-full"></div>
-                <p className="text-2xl md:text-3xl font-black text-green-900 drop-shadow-sm break-all leading-tight mb-4">
-                  {rootNode.value} = {factorizationResultString}
-                </p>
-                <button
-                  onClick={(e) => { e.stopPropagation(); setRootNode(null); }}
-                  className="px-8 py-3 bg-green-500 text-white text-base rounded-2xl font-black hover:bg-green-600 transition-all shadow-md hover:scale-105 active:scale-95"
+                <div className="text-4xl text-slate-200 font-light mx-4">=</div>
+                <div className="flex items-center bg-white px-10 py-5 rounded-[30px] shadow-xl shadow-green-900/5 border-2 border-green-400/30 overflow-x-auto max-w-full">
+                  {factorizationResultElements}
+                </div>
+              </div>
+              
+              <button 
+                onClick={() => setRootNode(null)}
+                className="px-10 py-3 bg-green-600 text-white font-black rounded-2xl hover:bg-green-700 transition-all shadow-lg hover:scale-105 active:scale-95 text-lg"
+              >
+                새로운 숫자 실험하기
+              </button>
+            </div>
+          ) : (
+            <div className="p-6 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
+              <div className="flex flex-col">
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">실험 대상</span>
+                <span className="text-2xl font-black text-slate-800">{rootNode.value}</span>
+              </div>
+              
+              <div className="flex items-center gap-4">
+                <span className="text-xs font-bold text-slate-400 italic">합성수를 클릭해 나누어 보세요!</span>
+                <button 
+                  onClick={() => setRootNode(null)}
+                  className="px-4 py-2 text-slate-400 hover:text-slate-600 font-bold transition-colors text-sm bg-white rounded-xl shadow-sm border border-slate-100"
                 >
-                  다른 숫자 해보기
+                  초기화
                 </button>
               </div>
-            )}
-
-            <div className="flex justify-center min-w-max w-full">
+            </div>
+          )}
+          
+          {/* 트리 본체 */}
+          <div className="flex-1 relative overflow-auto p-12 flex justify-center items-start min-h-[500px] scrollbar-hide">
+            <div className={`min-w-max transition-all duration-700 ${isComplete ? 'scale-90 opacity-60 grayscale-[0.3]' : ''}`}>
               {renderTreeNode(rootNode)}
             </div>
           </div>
 
-          <div className="mt-8 text-slate-500 text-xs font-bold tracking-wider opacity-60">
-            * 숫자를 클릭하여 분해하세요. 소수가 되면 예쁜 색이 입혀집니다!
-          </div>
+          {/* 하단 안내 문구 */}
+          {!isComplete && (
+            <div className="p-4 bg-slate-50 border-t border-slate-100 text-center">
+              <p className="text-[11px] text-slate-400 font-bold">
+                숫자를 클릭하면 나눌 수 있는 인수가 나타납니다. 모든 끝 노드가 <span className="text-blue-500">소수</span>가 되면 실험이 완료됩니다.
+              </p>
+            </div>
+          )}
         </div>
       )}
     </div>
